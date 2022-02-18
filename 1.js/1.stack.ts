@@ -1,6 +1,6 @@
 
 /*class Stack{
-    items: number[] = [];
+    private items: number[] = [];
     push(element: number) {
         this.items.push(element);
     }
