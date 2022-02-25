@@ -4,5 +4,3 @@ var c = {
     name: 'zhufeng',
     age: 10
 }
-
-55
