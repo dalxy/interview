@@ -1,5 +1,6 @@
 // 自定义函数实现闭包，保护变量
 function _extends(Child, Father) {
+    Child.__proto__ = Father; //继承静态属性和方法
     function Temp() {
         this.constructor = Child;
     }
