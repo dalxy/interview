@@ -55,4 +55,89 @@ this代表谁来调用，或者说当前执行这个逻辑的主体是谁，当�
  * 如何确定this的主体，核心就一条，.前面那个对象
  * 如果没有人来调，直接执行，没有明确主体，如果是非严格模式，主体是windows，如果是严格模式就是null或者undefined
 如果事件绑定的时候，this就是绑定的元素
+
+call
+call: 以obj作为调用方，或者说执行主体，调用getName方法
+手写call，apply，bind
+
+{let obj = {
+    name: "zhufeng",
+    age: 13,
+};
+!(function (protype) {
+    function getDefaultContext(context) {
+        context = context || window;
+        let type = typeof context;
+        if (["number", "string", "boolean".includes(type)]) {
+            context = new context.constructor(context);
+            return context;
+        }
+    }
+
+    function call2(context, ...args) {
+        context = getDefaultContext(context);
+        let symbal = Symbol("fn");
+        context.symbal = this;
+        context.symbal(...args);
+        delete context.symbal;
+    }
+
+    // 手写apply
+    function apply2(context, args) {
+        context = getDefaultContext(context);
+        let symbal = Symbol("fn");
+        context.symbal = this;
+        context.symbal(...args);
+        delete context.symbal;
+    }
+
+    // 手写bind
+    function bind2(context, ...outerArgs) {
+        return (...args) => this.call(context, ...outerArgs, ...args);
+    }
+
+    protype.call2 = call2;
+    protype.apply2 = apply2;
+    protype.bind2 = bind2;
+})(Function.prototype);
+
+function getName(age, home) {
+    console.log(this.name, age, home);
+}
+
+getName.call2(obj, 10, "beijing");
+getName.apply2(obj, [10, "beijing"]);
+let bindGetName = getName.bind2(obj, 10);
+bindGetName("zhufeng");
+}
+
+面向对象
+1.js数据类型分为二种：
+基本类型 string boolean null undefined symbol number
+引用类型 都是对象： 数组[] 对象{} /^$/ Date Math Function是一种特殊的对象
+2.对象和基本数据类型的本质区别是什么？
+基本类型只是一个值
+对象类型是若干个类型的集合，一切引用类型都是对象
+函数和数组也是对象
+3.函数为什么特殊，和其他对象的本质区别是什么？
+function本质上来说是可以生产别的对象的，它是一个对象的工厂，所有的对象，包括函数本身都是生产出来的
+4.为什么函数会出现？他能解决什么问题？
+为了加快生产对象的速度，就有了函数，函数可以用来批量的生产对象
+对象的属性分为两种，有些属性是特有的，有些属性是共有的
+为了节约内存和性能，
+把批量创建的对象（构造函数实例）共有的属性放到构造函数的原型上
+.运算符，先找实例的属性，如果找到了返回使用；如果找不到，就查找实例的prototype属性，如果有，直接返回
+实例有__proto__,没有prototype,构造函数有prototype
+特殊性：
+1.Function.prototype === Function.__proto__
+2.Object.prototype.__proto__ === null
+3.函数的祖宗就是Function
+4.Object对象的祖宗是null
+
+为什么要有原型链
+为了实现属性和方法的共享
+为什么要有函数
+函数的核心作用是批量创建对象
 -->
+<!--继承
+ -->
