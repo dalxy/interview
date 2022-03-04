@@ -140,4 +140,64 @@ function本质上来说是可以生产别的对象的，它是一个对象的工
 函数的核心作用是批量创建对象
 -->
 <!--继承
+prototypechain.jpg
  -->
+
+<!--词法环境和变量环境
+let和块级作用域，实现：
+存在变量提升，但let，const在未赋值之前是无法使用的，称为暂时性死区
+function fn() {
+    var a = 1;
+    let b = 2;
+    {
+        //第一个代码块
+        let b = 3;
+        var c = 4;
+        let d = 5;
+        console.log(a, b, c, d); //TODO
+    }
+    {
+        //第二个代码块
+        let b = 6;
+        let d = 7;
+        console.log(a, b, c, d);
+    }
+}
+fn();
+/**1.全局下编译
+ * es5创建VO，激活后成为AO
+ * es6 VariableEnviroment 变量环境 var function + lexicalEnviroment
+ *
+ */
+let globalEC = {
+    // this: globalThis, //windows
+    outer: null, //外部执行上下文环境 相当于es3中的scopeChain
+    VariableEnviroment: { fn() {} },
+    lexicalEnviroment: [{}],
+};
+// 静态作用域
+let fnEC = {
+    this: globalThis,
+    outer: globalEC.VariableEnviroment,
+};
+// 编译fn
+let fnEC = {
+    this: globalThis,
+    outer: globalEC.VariableEnviroment,
+    VariableEnviroment: { a: undefined, c: undefined },
+    lexicalEnviroment: [{ b: undefined }],
+};
+// 执行fn，进入第一个代码块的时候
+fnEC.VariableEnviroment.a = 1;
+fnEC.lexicalEnviroment[0].b = 2;
+// 函数执行时，遇到新的代码块，就会创建一个新的词法环境对象
+fnEC.lexicalEnviroment.push({ b: undefined, d: undefined });
+fnEC.lexicalEnviroment[1].b = 3;
+fnEC.VariableEnviroment.c = 4;
+fnEC.lexicalEnviroment[1].d = 5;
+
+fnEC.lexicalEnviroment.push({ b: undefined, d: undefined });
+fnEC.lexicalEnviroment[2].b = 6;
+fnEC.lexicalEnviroment[2].d = 7;
+
+-->
